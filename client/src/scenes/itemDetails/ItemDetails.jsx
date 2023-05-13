@@ -74,8 +74,8 @@ const ItemDetails = () => {
           <Box m="65px 0 25px 0">
             <Typography variant="h3">{item?.attributes?.name}</Typography>
             <Typography>${item?.attributes?.price}</Typography>
-            <Typography sx={{ mt: "20px" }}>
-              {item?.attributes?.longDescription}
+            <Typography sx={{ mt: "20px", whiteSpace: 'pre-wrap'}}>
+              {item?.attributes?.shortDescription}
             </Typography>
           </Box>
 
@@ -125,7 +125,7 @@ const ItemDetails = () => {
           <Tab label="REVIEWS" value="reviews" />
         </Tabs>
       </Box>
-      <Box display="flex" flexWrap="wrap" gap="15px">
+      <Box display="flex" flexWrap="wrap" gap="15px" whiteSpace='pre-wrap'>
         {value === "description" && (
           <div>{item?.attributes?.longDescription}</div>
         )}
