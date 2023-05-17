@@ -35,7 +35,6 @@ function Footer() {
           <Typography variant="h4" fontWeight="bold" mb="30px">
             About Us
           </Typography>
-          <Typography mb="30px">Careers</Typography>
           <Typography mb="30px">Our Stores</Typography>
           <Typography mb="30px">Terms & Conditions</Typography>
           <Typography mb="30px">Privacy Policy</Typography>
@@ -45,9 +44,8 @@ function Footer() {
           <Typography variant="h4" fontWeight="bold" mb="30px">
             Customer Care
           </Typography>
-          <Typography mb="30px">Help Center</Typography>
+          <Typography mb="30px">Help: (222)333-4444</Typography>
           <Typography mb="30px">Track Your Order</Typography>
-          <Typography mb="30px">Corporate & Bulk Purchasing</Typography>
           <Typography mb="30px">Returns & Refunds</Typography>
         </Box>
 
@@ -61,7 +59,6 @@ function Footer() {
           <Typography mb="30px" sx={{ wordWrap: "break-word" }}>
             Email: customercare@roomcharm.com
           </Typography>
-          <Typography mb="30px">(222)333-4444</Typography>
         </Box>
       </Box>
     </Box>

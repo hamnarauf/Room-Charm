@@ -1,14 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Badge, Box, IconButton } from "@mui/material";
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import {
-  PersonOutline,
   ShoppingBagOutlined,
   MenuOutlined,
-  SearchOutlined,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { shades } from "../../theme";
 import { setIsCartOpen } from "../../state";
+import { setIsNavMenuOpen } from "../../state";
+import { setIsTrackingOpen } from "../../state";
+
 
 function Navbar() {
   const navigate = useNavigate();
@@ -38,21 +40,23 @@ function Navbar() {
         <Box
           onClick={() => navigate("/")}
           sx={{ "&:hover": { cursor: "pointer" } }}
+          display="flex"
+          justifyContent="space-between"
           color={shades.secondary[500]}
+          columnGap="5px"
         >
-          Room Charm
+          <img src="/logo.png" alt="Logo" width="50px" height="auto" />
+          <span style={{ marginTop: "19px" }}>Room Charm</span>
         </Box>
+
         <Box
           display="flex"
           justifyContent="space-between"
           columnGap="20px"
           zIndex="2"
         >
-          <IconButton sx={{ color: "black" }}>
-            <SearchOutlined />
-          </IconButton>
-          <IconButton sx={{ color: "black" }}>
-            <PersonOutline />
+          <IconButton onClick={() => dispatch(setIsTrackingOpen({}))} sx={{ color: "black" }}>
+            <LocalShippingIcon />
           </IconButton>
           <Badge
             badgeContent={cart.length}
@@ -75,7 +79,8 @@ function Navbar() {
               <ShoppingBagOutlined />
             </IconButton>
           </Badge>
-          <IconButton sx={{ color: "black" }}>
+          <IconButton  onClick={() => dispatch(setIsNavMenuOpen({}))}
+          sx={{ color: "black" }}>
             <MenuOutlined />
           </IconButton>
         </Box>

@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Box, Button, Stepper, Step, StepLabel } from "@mui/material";
 import { Formik } from "formik";
 import { useState } from "react";
@@ -6,17 +6,22 @@ import * as yup from "yup";
 import { shades } from "../../theme";
 import Payment from "./Payment";
 import Shipping from "./Shipping";
-import { loadStripe } from "@stripe/stripe-js";
-
-const stripePromise = loadStripe(
-  "pk_test_51LgU7yConHioZHhlAcZdfDAnV9643a7N1CMpxlKtzI1AUWLsRyrord79GYzZQ6m8RzVnVQaHsgbvN1qSpiDegoPi006QkO0Mlc"
-);
+import { useNavigate } from "react-router-dom";
+import Confirmation from "./Confirmation";
+import { RepeatOneSharp } from "@mui/icons-material";
+import ConfirmationFailed from "./ConfirmationFailed";
+import {
+  removeFromCart,
+} from "../../state";
 
 const Checkout = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const dispatch = useDispatch();
+  const [status, setStatus] = useState(0);
   const cart = useSelector((state) => state.cart.cart);
   const isFirstStep = activeStep === 0;
   const isSecondStep = activeStep === 1;
+  const isThirdStep = activeStep === 2;
 
   const handleFormSubmit = async (values, actions) => {
     setActiveStep(activeStep + 1);
@@ -29,33 +34,53 @@ const Checkout = () => {
       });
     }
 
-    if (isSecondStep) {
+    if (isThirdStep) {
       makePayment(values);
+
+      // make cart empty
+      for (let i = 0; i < cart.length; i++) {
+        const id = cart[i].id;
+        dispatch(removeFromCart({ id: id }))
+      }
+
     }
 
     actions.setTouched({});
   };
 
   async function makePayment(values) {
-    const stripe = await stripePromise;
+
     const requestBody = {
-      userName: [values.firstName, values.lastName].join(" "),
-      email: values.email,
-      products: cart.map(({ id, count }) => ({
-        id,
-        count,
-      })),
+      "data": {
+        "userName": [values.billingAddress.firstName, values.billingAddress.lastName].join(" "),
+        // email: values.email,
+        "products": cart.map(({ id, count }) => ({
+          id,
+          count,
+        })),
+        "stripSessionId": "1"
+      }
     };
 
     const response = await fetch("http://localhost:1337/api/orders", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json; charset=UTF-8" },
       body: JSON.stringify(requestBody),
     });
-    const session = await response.json();
-    await stripe.redirectToCheckout({
-      sessionId: session.id,
-    });
+
+    setStatus(response.status)
+
+  }
+
+  if (status == 200) {
+    return (
+      <Confirmation />
+    )
+  }
+  else if (status != 200 && status != 0) {
+    return (
+      <ConfirmationFailed />
+    )
   }
 
   return (
@@ -66,6 +91,9 @@ const Checkout = () => {
         </Step>
         <Step>
           <StepLabel>Payment</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel>Confirmation</StepLabel>
         </Step>
       </Stepper>
       <Box>
