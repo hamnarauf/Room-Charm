@@ -1,17 +1,17 @@
 {
   "kind": "collectionType",
-  "collectionName": "tests",
+  "collectionName": "subscribers",
   "info": {
-    "singularName": "test",
-    "pluralName": "tests",
-    "displayName": "Test"
+    "singularName": "subscriber",
+    "pluralName": "subscribers",
+    "displayName": "Subscriber"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "test": {
+    "email": {
       "type": "string"
     }
   }
