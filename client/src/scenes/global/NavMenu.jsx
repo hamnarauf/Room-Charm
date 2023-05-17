@@ -1,17 +1,17 @@
-import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Button, Divider, IconButton, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import styled from "@emotion/styled";
-import { shades } from "../../theme";
 import {
-    decreaseCount,
-    increaseCount,
-    removeFromCart,
+
     setIsNavMenuOpen,
 } from "../../state";
 import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { Home, Inbox, Mail, InfoOutlined  } from '@mui/icons-material';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
+
 
 const FlexBox = styled(Box)`
   display: flex;
@@ -52,97 +52,45 @@ const NavMenu = () => {
                 backgroundColor="white"
             >
                 <Box padding="30px" overflow="auto" height="100%">
-                    {/* HEADER */}
                     <FlexBox mb="15px">
-                        <Typography variant="h3">Nav Menu({cart.length})</Typography>
+                        <Typography variant="h3">Nav Menu</Typography>
                         <IconButton onClick={() => dispatch(setIsNavMenuOpen({}))}>
                             <CloseIcon />
                         </IconButton>
                     </FlexBox>
 
-                    {/* CART LIST */}
-                    <Box>
-                        {cart.map((item) => (
-                            <Box key={`${item.attributes.name}-${item.id}`}>
-                                <FlexBox p="15px 0">
-                                    <Box flex="1 1 40%">
-                                        <img
-                                            alt={item?.name}
-                                            width="123px"
-                                            height="164px"
-                                            src={`http://localhost:1337${item?.attributes?.image?.data?.attributes?.formats?.medium?.url}`}
-                                        />
-                                    </Box>
-                                    <Box flex="1 1 60%">
-                                        <FlexBox mb="5px">
-                                            <Typography fontWeight="bold">
-                                                {item.attributes.name}
-                                            </Typography>
-                                            <IconButton
-                                                onClick={() =>
-                                                    dispatch(removeFromCart({ id: item.id }))
-                                                }
-                                            >
-                                                <CloseIcon />
-                                            </IconButton>
-                                        </FlexBox>
-                                        <Typography>{item.attributes.shortDescription}</Typography>
-                                        <FlexBox m="15px 0">
-                                            <Box
-                                                display="flex"
-                                                alignItems="center"
-                                                border={`1.5px solid ${shades.neutral[500]}`}
-                                            >
-                                                <IconButton
-                                                    onClick={() =>
-                                                        dispatch(decreaseCount({ id: item.id }))
-                                                    }
-                                                >
-                                                    <RemoveIcon />
-                                                </IconButton>
-                                                <Typography>{item.count}</Typography>
-                                                <IconButton
-                                                    onClick={() =>
-                                                        dispatch(increaseCount({ id: item.id }))
-                                                    }
-                                                >
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </Box>
-                                            <Typography fontWeight="bold">
-                                                ${item.attributes.price}
-                                            </Typography>
-                                        </FlexBox>
-                                    </Box>
-                                </FlexBox>
-                                <Divider />
-                            </Box>
-                        ))}
-                    </Box>
-
-                    {/* ACTIONS */}
-                    <Box m="20px 0">
-                        <FlexBox m="20px 0">
-                            <Typography fontWeight="bold">SUBTOTAL</Typography>
-                            <Typography fontWeight="bold">${totalPrice}</Typography>
-                        </FlexBox>
-                        <Button
-                            sx={{
-                                backgroundColor: shades.primary[400],
-                                color: "white",
-                                borderRadius: 0,
-                                minWidth: "100%",
-                                padding: "20px 40px",
-                                m: "20px 0",
-                            }}
-                            onClick={() => {
-                                navigate("/checkout");
-                                dispatch(setIsNavMenuOpen({}));
-                            }}
-                        >
-                            CHECKOUT
-                        </Button>
-                    </Box>
+                    <List>
+                        <ListItem button component={Link} to="/" onClick={() => dispatch(setIsNavMenuOpen({}))}>
+                            <ListItemIcon>
+                                <Home />
+                            </ListItemIcon>
+                            <ListItemText primary="Home" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/about" onClick={() => dispatch(setIsNavMenuOpen({}))}>
+                            <ListItemIcon>
+                                <InfoOutlined />
+                            </ListItemIcon>
+                            <ListItemText primary="About Us" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/items" onClick={() => dispatch(setIsNavMenuOpen({}))}>
+                            <ListItemIcon>
+                                <AddShoppingCartIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Online Shop" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/stores" onClick={() => dispatch(setIsNavMenuOpen({}))}>
+                            <ListItemIcon>
+                                <ShoppingBagIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Our Stores" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/subscribe" onClick={() => dispatch(setIsNavMenuOpen({}))}>
+                            <ListItemIcon>
+                                <Mail />
+                            </ListItemIcon>
+                            <ListItemText primary="Subscribe" />
+                        </ListItem>
+                    </List>
                 </Box>
             </Box>
         </Box>

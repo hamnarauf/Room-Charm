@@ -79,8 +79,8 @@ function Navbar() {
               <ShoppingBagOutlined />
             </IconButton>
           </Badge>
-          <IconButton  onClick={() => dispatch(setIsNavMenuOpen({}))}
-          sx={{ color: "black" }}>
+          <IconButton onClick={() => dispatch(setIsNavMenuOpen({}))}
+            sx={{ color: "black" }}>
             <MenuOutlined />
           </IconButton>
         </Box>
