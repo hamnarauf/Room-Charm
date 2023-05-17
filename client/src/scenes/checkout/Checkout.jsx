@@ -16,12 +16,14 @@ import {
 
 const Checkout = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const [orderId, setOrderId] = useState(0);
   const dispatch = useDispatch();
   const [status, setStatus] = useState(0);
   const cart = useSelector((state) => state.cart.cart);
   const isFirstStep = activeStep === 0;
   const isSecondStep = activeStep === 1;
   const isThirdStep = activeStep === 2;
+
 
   const handleFormSubmit = async (values, actions) => {
     setActiveStep(activeStep + 1);
@@ -35,14 +37,14 @@ const Checkout = () => {
     }
 
     if (isThirdStep) {
-      makePayment(values);
+      let orderid = makePayment(values);
+      console.log(orderId);
 
       // make cart empty
       for (let i = 0; i < cart.length; i++) {
         const id = cart[i].id;
         dispatch(removeFromCart({ id: id }))
       }
-
     }
 
     actions.setTouched({});
@@ -53,13 +55,30 @@ const Checkout = () => {
     const requestBody = {
       "data": {
         "userName": [values.billingAddress.firstName, values.billingAddress.lastName].join(" "),
-        // email: values.email,
+        "country":values.billingAddress.country,
+        "city":values.billingAddress.city,
+        "state":values.billingAddress.state,
+        "zipCode":values.billingAddress.zipCode,
+        "streetAddress":values.billingAddress.street1,
+        "streetAddress2":values.billingAddress.street2,
+
+        "shippingUserName": [values.shippingAddress.firstName, values.shippingAddress.lastName].join(" "),
+        "shippingCountry":values.shippingAddress.country,
+        "shippingCity":values.shippingAddress.city,
+        "shippingState":values.shippingAddress.state,
+        "shippingZipCode":values.shippingAddress.zipCode,
+        "shippingStreetAddress":values.shippingAddress.street1,
+        "shippingStreetAddress2":values.shippingAddress.street2,
+
+        "email":values.email,
+        "phoneNumber":values.phoneNumber,
+
         "products": cart.map(({ id, count }) => ({
           id,
           count,
         })),
-        "stripSessionId": "1"
-      }
+        "status":"confirmed"
+      }      
     };
 
     const response = await fetch("http://localhost:1337/api/orders", {
@@ -70,11 +89,14 @@ const Checkout = () => {
 
     setStatus(response.status)
 
+    const data = await response.json();
+    setOrderId(data.data.id);
   }
 
   if (status == 200) {
+    console.log(orderId);
     return (
-      <Confirmation />
+      <Confirmation id={orderId} />
     )
   }
   else if (status != 200 && status != 0) {
@@ -90,7 +112,7 @@ const Checkout = () => {
           <StepLabel>Billing</StepLabel>
         </Step>
         <Step>
-          <StepLabel>Payment</StepLabel>
+          <StepLabel>Contact</StepLabel>
         </Step>
         <Step>
           <StepLabel>Confirmation</StepLabel>
