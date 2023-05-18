@@ -11,6 +11,7 @@ import ConfirmationFailed from "./ConfirmationFailed";
 import {
   removeFromCart,
 } from "../../state";
+import OrderDetails from "./OrderDetails";
 
 const Checkout = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -151,6 +152,11 @@ const Checkout = () => {
                   setFieldValue={setFieldValue}
                 />
               )}
+              {
+                isThirdStep &&(
+                  <OrderDetails values={values} cart={cart}/>
+                )
+              }
               <Box display="flex" justifyContent="space-between" gap="50px">
                 {!isFirstStep && (
                   <Button
@@ -182,7 +188,7 @@ const Checkout = () => {
                     padding: "15px 40px",
                   }}
                 >
-                  {!isSecondStep ? "Next" : "Place Order"}
+                  {isSecondStep ? "Next" : "Place Order"}
                 </Button>
               </Box>
             </form>

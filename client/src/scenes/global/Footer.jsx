@@ -33,20 +33,11 @@ function Footer() {
 
         <Box>
           <Typography variant="h4" fontWeight="bold" mb="30px">
-            About Us
-          </Typography>
-          <Typography mb="30px">Our Stores</Typography>
-          <Typography mb="30px">Terms & Conditions</Typography>
-          <Typography mb="30px">Privacy Policy</Typography>
-        </Box>
-
-        <Box>
-          <Typography variant="h4" fontWeight="bold" mb="30px">
             Customer Care
           </Typography>
           <Typography mb="30px">Help: (222)333-4444</Typography>
           <Typography mb="30px">Track Your Order</Typography>
-          <Typography mb="30px">Returns & Refunds</Typography>
+          <Typography mb="30px">Order Now</Typography>
         </Box>
 
         <Box width="clamp(20%, 25%, 30%)">

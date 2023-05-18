@@ -30,12 +30,14 @@ const TrackingMenu = () => {
       price += count * item.attributes.price;
     });
     setTotalPrice(price);
+    console.log(cart)
   }, [cart, order]);
 
   useEffect(() => {
     // Check if order is not empty
     if (order && order.products && order.products.length > 0) {
       const fetchItems = async () => {
+        let updatedCart = [];
         for (const item of order.products) {
           try {
             const response = await fetch(`http://localhost:1337/api/items/${item.id}?populate=image`);
@@ -44,14 +46,15 @@ const TrackingMenu = () => {
               return;
             }
             const data = await response.json();
+            updatedCart.push(data.data);
             // Process the fetched data here
-            await setCart([...cart, data.data])
-
+            
           } catch (error) {
             setError(true);
             return;
           }
         }
+        setCart(updatedCart)
       };
       fetchItems();
     }
@@ -69,7 +72,6 @@ const TrackingMenu = () => {
     }
     const data = await response.json();
     setOrder(data.data.attributes)
-    console.log("products", order.products.find((product) => product.id === 3).count)
 
   };
 
@@ -135,17 +137,19 @@ const TrackingMenu = () => {
             </Typography>
           }
           {
-            order != "" &&
+            cart != "" &&
             <Box>
               <FlexBox p="7px 5px 0px">
                 <Box>Email: {order.email}</Box>
                 <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
                 <Box>Phone: {order.phoneNumber}</Box>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <Box>Status: {order.status}</Box>
               </FlexBox>
               <FlexBox p="0px 5px">
                 <strong>Billing Address</strong>
                 <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-                <strong>Shipping Address</strong>
+                <strong>Shiping Address</strong>
               </FlexBox>
               <FlexBox p="0px 5px">
                 <Box>Name: {order.userName}</Box>

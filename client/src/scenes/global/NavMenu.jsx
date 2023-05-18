@@ -57,24 +57,13 @@ const NavMenu = () => {
                             </ListItemIcon>
                             <ListItemText primary="Home" />
                         </ListItem>
-                        <ListItem button component={Link} to="/about" onClick={() => dispatch(setIsNavMenuOpen({}))}>
-                            <ListItemIcon>
-                                <InfoOutlined />
-                            </ListItemIcon>
-                            <ListItemText primary="About Us" />
-                        </ListItem>
                         <ListItem button component={Link} to="/items" onClick={() => dispatch(setIsNavMenuOpen({}))}>
                             <ListItemIcon>
                                 <AddShoppingCartIcon />
                             </ListItemIcon>
                             <ListItemText primary="Online Shop" />
                         </ListItem>
-                        <ListItem button component={Link} to="/stores" onClick={() => dispatch(setIsNavMenuOpen({}))}>
-                            <ListItemIcon>
-                                <ShoppingBagIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Our Stores" />
-                        </ListItem>
+
                         <ListItem button component={Link} to="/subscribe" onClick={() => dispatch(setIsNavMenuOpen({}))}>
                             <ListItemIcon>
                                 <Mail />
