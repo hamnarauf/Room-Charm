@@ -1,17 +1,12 @@
-import { Box, Button, Divider, IconButton, Typography } from "@mui/material";
+import { Box, Divider, IconButton, Typography, InputBase } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import styled from "@emotion/styled";
 import { shades } from "../../theme";
 import {
-  decreaseCount,
-  increaseCount,
-  removeFromCart,
   setIsTrackingOpen,
 } from "../../state";
-import { useNavigate } from "react-router-dom";
 
 const FlexBox = styled(Box)`
   display: flex;
@@ -20,14 +15,70 @@ const FlexBox = styled(Box)`
 `;
 
 const TrackingMenu = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart.cart);
   const isTrackingOpen = useSelector((state) => state.cart.isTrackingOpen);
+  const [orderId, setOrderId] = useState("");
+  const [order, setOrder] = useState([]);
+  const [error, setError] = useState(false);
+  const [cart, setCart] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
-  const totalPrice = cart.reduce((total, item) => {
-    return total + item.count * item.attributes.price;
-  }, 0);
+  useEffect(() => {
+    let price = 0;
+    cart.forEach((item) => {
+      const count = order.products.find((product) => product.id === item.id).count;
+      price += count * item.attributes.price;
+    });
+    setTotalPrice(price);
+  }, [cart, order]);
+
+  useEffect(() => {
+    // Check if order is not empty
+    if (order && order.products && order.products.length > 0) {
+      const fetchItems = async () => {
+        for (const item of order.products) {
+          try {
+            const response = await fetch(`http://localhost:1337/api/items/${item.id}?populate=image`);
+            if (!response.ok) {
+              setError(true);
+              return;
+            }
+            const data = await response.json();
+            // Process the fetched data here
+            await setCart([...cart, data.data])
+
+          } catch (error) {
+            setError(true);
+            return;
+          }
+        }
+      };
+      fetchItems();
+    }
+  }, [order]);
+
+  async function handleSubmit() {
+    setOrder([]);
+    setCart([]);
+
+    setError(false)
+    const response = await fetch(`http://localhost:1337/api/orders/${orderId}`);
+    if (!response.ok) {
+      setError(true)
+      return
+    }
+    const data = await response.json();
+    setOrder(data.data.attributes)
+    console.log("products", order.products.find((product) => product.id === 3).count)
+
+  };
+
+  function close() {
+    dispatch(setIsTrackingOpen({}));
+    setOrder([]);
+    setCart([]);
+    setOrderId("");
+  }
 
   return (
     <Box
@@ -45,102 +96,134 @@ const TrackingMenu = () => {
         position="fixed"
         right="0"
         bottom="0"
-        width="max(400px, 30%)"
+        width="max(400px, 40%)"
         height="100%"
         backgroundColor="white"
       >
         <Box padding="30px" overflow="auto" height="100%">
           {/* HEADER */}
-          <FlexBox mb="15px">
-            <Typography variant="h3">Tracking ({cart.length})</Typography>
-            <IconButton onClick={() => dispatch(setIsTrackingOpen({}))}>
+          <FlexBox mb="25px">
+            <Typography variant="h3">Track Your Order</Typography>
+            <IconButton onClick={() => close()}>
               <CloseIcon />
             </IconButton>
           </FlexBox>
 
-          {/* CART LIST */}
-          <Box>
-            {cart.map((item) => (
-              <Box key={`${item.attributes.name}-${item.id}`}>
-                <FlexBox p="15px 0">
-                  <Box flex="1 1 40%">
-                    <img
-                      alt={item?.name}
-                      width="123px"
-                      height="164px"
-                      src={`http://localhost:1337${item?.attributes?.image?.data?.attributes?.formats?.medium?.url}`}
-                    />
-                  </Box>
-                  <Box flex="1 1 60%">
-                    <FlexBox mb="5px">
-                      <Typography fontWeight="bold">
-                        {item.attributes.name}
-                      </Typography>
-                      <IconButton
-                        onClick={() =>
-                          dispatch(removeFromCart({ id: item.id }))
-                        }
-                      >
-                        <CloseIcon />
-                      </IconButton>
-                    </FlexBox>
-                    <Typography>{item.attributes.shortDescription}</Typography>
-                    <FlexBox m="15px 0">
-                      <Box
-                        display="flex"
-                        alignItems="center"
-                        border={`1.5px solid ${shades.neutral[500]}`}
-                      >
-                        <IconButton
-                          onClick={() =>
-                            dispatch(decreaseCount({ id: item.id }))
-                          }
-                        >
-                          <RemoveIcon />
-                        </IconButton>
-                        <Typography>{item.count}</Typography>
-                        <IconButton
-                          onClick={() =>
-                            dispatch(increaseCount({ id: item.id }))
-                          }
-                        >
-                          <AddIcon />
-                        </IconButton>
+          <Box
+            p="2px 4px"
+            m="15px auto"
+            display="flex"
+            alignItems="center"
+            width="100%"
+            backgroundColor="#F2F2F2"
+          >
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Enter Order ID"
+              onChange={(e) => setOrderId(e.target.value)}
+              value={orderId}
+            />
+            <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+            <Typography sx={{ p: "10px", ":hover": { cursor: "pointer" } }} onClick={handleSubmit}>
+              Search
+            </Typography>
+          </Box>
+          {
+            error &&
+            <Typography sx={{ color: "red" }} >
+              Invalid Order Id —{" "} Try Again
+            </Typography>
+          }
+          {
+            order != "" &&
+            <Box>
+              <FlexBox p="7px 5px 0px">
+                <Box>Email: {order.email}</Box>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <Box>Phone: {order.phoneNumber}</Box>
+              </FlexBox>
+              <FlexBox p="0px 5px">
+                <strong>Billing Address</strong>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <strong>Shipping Address</strong>
+              </FlexBox>
+              <FlexBox p="0px 5px">
+                <Box>Name: {order.userName}</Box>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <Box>Name: {order.shippingUserName}</Box>
+              </FlexBox>
+              <FlexBox p="0px 5px">
+                <Box>Country: {order.country}</Box>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <Box>Country: {order.shippingCountry}</Box>
+              </FlexBox>
+              <FlexBox p="0px 5px">
+                <Box>City: {order.city}</Box>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <Box>City: {order.shippingCity}</Box>
+              </FlexBox>
+              <FlexBox p="0px 5px">
+                <Box>Street Address1: {order.streetAddress}</Box>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <Box>Street Address1: {order.shippingStreetAddress}</Box>
+              </FlexBox>
+              {order.streetAddress2 && <FlexBox p="0px 5px">
+                {order.streetAddress2 && <Box>Street Address 2: {order.streetAddress2}</Box>}
+                {order.streetAddress2 && <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />}
+                {order.shippingStreetAddress2 && <Box>Street Address 2: {order.shippingStreetAddress2}</Box>}
+              </FlexBox>}
+              <FlexBox p="0px 5px">
+                <Box>State: {order.state}</Box>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <Box>State: {order.shippingState}</Box>
+              </FlexBox>
+              <FlexBox p="0px 5px 15px">
+                <Box>Zip Code: {order.zipCode}</Box>
+                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+                <Box>Zip Code: {order.shippingZipCode}</Box>
+              </FlexBox>
+              <Box>
+                <Typography variant="h3"><strong>Order Details</strong></Typography>
+                {cart.map((item) => (
+                  <Box key={`${item.attributes.name}-${item.id}`}>
+                    <FlexBox p="15px 0">
+                      <Box flex="1 1 20%">
+                        <img
+                          alt={item?.attributes?.name}
+                          width="98px"
+                          height="130px"
+                          src={`http://localhost:1337${item?.attributes?.image?.data?.attributes?.formats?.medium?.url}`}
+                        />
                       </Box>
-                      <Typography fontWeight="bold">
-                        ${item.attributes.price}
-                      </Typography>
-                    </FlexBox>
-                  </Box>
-                </FlexBox>
-                <Divider />
-              </Box>
-            ))}
-          </Box>
+                      <Box flex="1 1 60%">
+                        <FlexBox mb="5px">
+                          <Typography fontWeight="bold">
+                            {item.attributes.name}
+                          </Typography>
 
-          {/* ACTIONS */}
-          <Box m="20px 0">
-            <FlexBox m="20px 0">
-              <Typography fontWeight="bold">SUBTOTAL</Typography>
-              <Typography fontWeight="bold">${totalPrice}</Typography>
-            </FlexBox>
-            <Button
-              sx={{
-                backgroundColor: shades.primary[400],
-                color: "white",
-                borderRadius: 0,
-                minWidth: "100%",
-                padding: "20px 40px",
-                m: "20px 0",
-              }}
-              onClick={() => {
-                navigate("/checkout");
-                dispatch(setIsTrackingOpen({}));
-              }}
-            >
-              CHECKOUT
-            </Button>
-          </Box>
+                        </FlexBox>
+                        <Typography>{item.attributes.shortDescription}</Typography>
+                        <FlexBox m="15px 0">
+                          <Typography fontWeight="bold">
+                            Quantity: {order.products.find((product) => product.id === item.id).count}
+                          </Typography>
+                          <Typography fontWeight="bold">
+                            ${item.attributes.price}
+                          </Typography>
+                        </FlexBox>
+                      </Box>
+                    </FlexBox>
+                    <Divider />
+
+                  </Box>
+                ))}
+                <FlexBox m="20px 0">
+                  <Typography fontWeight="bold">SUBTOTAL</Typography>
+                  <Typography fontWeight="bold">${totalPrice}</Typography>
+                </FlexBox>
+              </Box>
+            </Box>
+          }
         </Box>
       </Box>
     </Box>

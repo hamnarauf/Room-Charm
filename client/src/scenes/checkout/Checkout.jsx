@@ -6,9 +6,7 @@ import * as yup from "yup";
 import { shades } from "../../theme";
 import Payment from "./Payment";
 import Shipping from "./Shipping";
-import { useNavigate } from "react-router-dom";
 import Confirmation from "./Confirmation";
-import { RepeatOneSharp } from "@mui/icons-material";
 import ConfirmationFailed from "./ConfirmationFailed";
 import {
   removeFromCart,
@@ -37,8 +35,7 @@ const Checkout = () => {
     }
 
     if (isThirdStep) {
-      let orderid = makePayment(values);
-      console.log(orderId);
+        makePayment(values);
 
       // make cart empty
       for (let i = 0; i < cart.length; i++) {

@@ -1,4 +1,4 @@
-import { Box, Button, Divider, IconButton, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Box, IconButton, Typography, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import styled from "@emotion/styled";
@@ -6,9 +6,8 @@ import {
 
     setIsNavMenuOpen,
 } from "../../state";
-import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
-import { Home, Inbox, Mail, InfoOutlined  } from '@mui/icons-material';
+import { Home, Mail, InfoOutlined  } from '@mui/icons-material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 
@@ -20,16 +19,8 @@ const FlexBox = styled(Box)`
 `;
 
 const NavMenu = () => {
-    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const cart = useSelector((state) => state.cart.cart);
     const isNavMenuOpen = useSelector((state) => state.cart.isNavMenuOpen);
-
-    console.log("insidde nav menu", isNavMenuOpen);
-
-    const totalPrice = cart.reduce((total, item) => {
-        return total + item.count * item.attributes.price;
-    }, 0);
 
     return (
         <Box

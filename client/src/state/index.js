@@ -48,7 +48,6 @@ export const cartSlice = createSlice({
 
     setIsNavMenuOpen: (state) => {
       state.isNavMenuOpen = !state.isNavMenuOpen;
-      console.log("nav state", state.isNavMenuOpen);
     },
 
     setIsTrackingOpen: (state) => {

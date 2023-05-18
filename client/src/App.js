@@ -8,7 +8,6 @@ import CartMenu from "./scenes/global/CartMenu";
 import NavMenu from "./scenes/global/NavMenu";
 import TrackingMenu from "./scenes/global/TrackingMenu";
 import Checkout from "./scenes/checkout/Checkout";
-import Confirmation from "./scenes/checkout/Confirmation";
 import Subscribe from "./scenes/home/Subscribe";
 import ShoppingList from "./scenes/home/ShoppingList";
 
