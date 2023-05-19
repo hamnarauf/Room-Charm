@@ -19,7 +19,6 @@ const TrackingMenu = () => {
   const isTrackingOpen = useSelector((state) => state.cart.isTrackingOpen);
   const [orderId, setOrderId] = useState("");
   const [order, setOrder] = useState([]);
-  const [error, setError] = useState(false);
   const [cart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -42,7 +41,6 @@ const TrackingMenu = () => {
           try {
             const response = await fetch(`http://localhost:1337/api/items/${item.id}?populate=image`);
             if (!response.ok) {
-              setError(true);
               return;
             }
             const data = await response.json();
@@ -50,7 +48,6 @@ const TrackingMenu = () => {
             // Process the fetched data here
             
           } catch (error) {
-            setError(true);
             return;
           }
         }
@@ -64,10 +61,8 @@ const TrackingMenu = () => {
     setOrder([]);
     setCart([]);
 
-    setError(false)
     const response = await fetch(`http://localhost:1337/api/orders/${orderId}`);
     if (!response.ok) {
-      setError(true)
       return
     }
     const data = await response.json();
@@ -130,12 +125,6 @@ const TrackingMenu = () => {
               Search
             </Typography>
           </Box>
-          {
-            error &&
-            <Typography sx={{ color: "red" }} >
-              Invalid Order Id —{" "} Try Again
-            </Typography>
-          }
           {
             cart != "" &&
             <Box>
