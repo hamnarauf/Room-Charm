@@ -21,6 +21,7 @@ const TrackingMenu = () => {
   const [order, setOrder] = useState([]);
   const [cart, setCart] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let price = 0;
@@ -41,13 +42,15 @@ const TrackingMenu = () => {
           try {
             const response = await fetch(`http://localhost:1337/api/items/${item.id}?populate=image`);
             if (!response.ok) {
+              setError(true);
               return;
             }
             const data = await response.json();
             updatedCart.push(data.data);
             // Process the fetched data here
-            
+
           } catch (error) {
+            setError(true);
             return;
           }
         }
@@ -61,12 +64,14 @@ const TrackingMenu = () => {
     setOrder([]);
     setCart([]);
 
-    const response = await fetch(`http://localhost:1337/api/orders/${orderId}`);
-    if (!response.ok) {
-      return
-    }
-    const data = await response.json();
-    setOrder(data.data.attributes)
+    setError(false)
+      const response = await fetch(`http://localhost:1337/api/orders/${orderId}`);
+      if (!response.ok) {
+        setError(true)
+        return
+      }
+      const data = await response.json();
+      setOrder(data.data.attributes)
 
   };
 
@@ -125,6 +130,12 @@ const TrackingMenu = () => {
               Search
             </Typography>
           </Box>
+          {
+            error &&
+            <Typography sx={{ color: "red" }} >
+              Invalid Order Id —{" "} Try Again
+            </Typography>
+          }
           {
             cart != "" &&
             <Box>
